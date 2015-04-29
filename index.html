@@ -1,0 +1,58 @@
+
+
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="apple-touch-icon" href="apple-touch-icon.png">
+        <!-- Place favicon.ico in the root directory -->
+
+        <link rel="stylesheet" href="css/jquery.terminal.css">
+		
+        <script src="js/jquery-1.7.1.min.js"></script>
+        <script src="js/jquery.terminal-0.8.8.js"></script>
+		<script src="js/angular.js"></script>
+    </head>
+    <body>
+        <!--[if lt IE 8]>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+		<script>
+		angular.module("MyApp", [])
+			.controller('MyCtrl', ['$scope','$rootScope', function ($scope,$rootScope) {
+			$scope.stuff = [1, 2, 3];
+			/*$scope.disable = function(){
+				$rootScope.$broadcast('disable', true);
+			};*/
+		}])
+			.directive('jqueryTerminal', function ($compile) {
+			return {
+				restrict: 'E',
+				replace: true,
+				template: '<div></div>',
+				link: function (scope, elem, attrs) {
+					$(elem).terminal(function (cmd, term) {}, {prompt: '$ ',greetings: false});
+					$('.cursor').after($compile('<input type="text" name="userName" ng-model="user.name" ng-focus="disable=true" ng-blur="disable=false">')(scope));
+					attrs.$observe('disabled', function(value) {
+						$(elem).terminal().disable();
+						//debugger;
+					})
+//scope.$apply(); 
+				}
+			};
+		});
+		</script>
+		<div ng-app="MyApp">
+			<div ng-controller="MyCtrl" style="background-color: black">
+			{{user.name}}
+				<jquery-terminal disabled="{{disable}}"></jquery-terminal>
+			</div>
+		</div>
+     
+    </body>
+</html>
