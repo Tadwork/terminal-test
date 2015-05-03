@@ -98,8 +98,10 @@
 					elem[0].scrollTop = elem[0].scrollHeight;
 				}
 				$(elem).css({ "max-height":  $(elem).parent().height()+ 'px' });
+				$(elem).css({ "height":  $(elem).parent().height()+ 'px' });
 				$(window).resize(function(){
 				$(elem).css({ "max-height":  $(elem).parent().height()+ 'px' });
+				$(elem).css({ "height":  $(elem).parent().height()+ 'px' });
 				});  
 				scope.prompt = '$ ';
 					$(elem).find('.cmd').cmd({
@@ -111,10 +113,11 @@
 					//term.echo(cmd);
 					},
 					prompt: scope.prompt,
-					keydown: function(event,term){
-						if(event.keyCode == 13 && event.shiftKey){
+					keydown: function(event){
+						if(event.keyCode == 13){
+							$(elem).find('.cmd').cmd().insert('\n');
 					//		term.exec("[[;;;code]"+ term.get_command() +"]")
-							
+							return false;
 						}
 						
 					},
