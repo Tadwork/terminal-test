@@ -1,0 +1,87 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="shortcut icon" type="image/png" href="jasmine/lib/jasmine-2.0.0/jasmine_favicon.png">
+        <link rel="apple-touch-icon" href="apple-touch-icon.png">
+        <!-- Place favicon.ico in the root directory -->
+
+        <link rel="stylesheet" href="css/jquery.terminal.css">
+		<link rel="stylesheet" type="text/css" href="js/jasmine.css">
+		<script type="text/javascript" src="js/jasmine.js"></script>
+		<script type="text/javascript" src="js/jasmine-html.js"></script>
+		<script type="text/javascript" src="js/boot.js"></script>
+		<script src="js/jquery-1.7.1.min.js"></script>
+        <script src="js/jquery.terminal-0.8.8.js"></script>
+		<script src="js/angular.js"></script>
+		<script src="js/angular-mocks.js"></script>
+		<script>
+		var MyApp = angular.module("MyApp", [])
+			.controller('MyCtrl', ['$scope','$rootScope', function ($scope,$rootScope) {
+			$scope.stuff = [1, 2, 3];
+			//$scope.out = [{cmd:"cmd"}];
+			/*$scope.disable = function(){
+				$rootScope.$broadcast('disable', true);
+			};*/
+		}]);
+		</script>
+		<script src="js/jquery-terminal.js"></script>
+		<script>
+		var triggerKeyDown = function (element, keyCode) {
+			var e = $.Event("keydown");
+			e.which = keyCode;
+			e.keyCode = keyCode;
+			element.trigger(e);
+		  };
+		describe('Unit testing jquery terminal', function() {
+		  var $compile,
+			  $rootScope,
+			  compileValue,
+			  mockCompiler;
+
+		  // Load the myApp module, which contains the directive
+		  beforeEach(module('MyApp', function ($provide) {
+			  compileValue = {type:'success',cmd:'test',output:'test-output'};
+			  mockCompiler = {
+				cmd:function() {return compileValue;}
+			  };
+			  $provide.value('compiler', mockCompiler);
+		  }));
+
+		  // Store references to $rootScope and $compile
+		  // so they are available to all tests in this describe block
+		  beforeEach(inject(function(_$compile_, _$rootScope_){
+			// The injector unwraps the underscores (_) from around the parameter names when matching
+			$compile = _$compile_;
+			$rootScope = _$rootScope_;
+		  }));
+
+		  it('includes a cmd line', function() {
+			// Compile a piece of HTML containing the directive
+			var element = $compile("<jquery-terminal></jquery-terminal>")($rootScope);
+			$rootScope.$digest();
+			// Check that the compiled element contains the templated content
+			expect($(element).find('.cmd').length).toBe(1);
+		  });
+		  it('pushes a success', function() {
+			var element = $compile("<body><jquery-terminal/></body>")($rootScope);
+			$rootScope.$digest();
+			triggerKeyDown($('body'),13)
+			expect($(element).find('.output-success').length).toBe(1);
+		  });
+		  it('pushes an error', function() {
+			var element = $compile("<body><jquery-terminal/></body>")($rootScope);
+			compileValue = {type:'error',cmd:'test',output:'test-output'};
+			$rootScope.$digest();
+			triggerKeyDown($('body'),13)
+			expect($(element).find('.output-error').length).toBe(1);
+		  });
+		});
+		</script>
+    </head>
+    <body></body>
+</html>
